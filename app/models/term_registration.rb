@@ -1,0 +1,2 @@
+class TermRegistration < ApplicationRecord
+end
