@@ -1,4 +1,14 @@
 class TermRegistrationsController < ApplicationController
+  def index
+    user = User.find_by(uid: params[:user_id])
+    if user
+      categories = user.term_registrations.map { |term_registration| term_registration.category }
+      render json: categories, status: :ok
+    else
+      render json: { error: "User not found" }, status: :not_found
+    end
+  end
+
   def create
     # ログインユーザーを取得
     user = User.find_by(uid: params[:user_id])
