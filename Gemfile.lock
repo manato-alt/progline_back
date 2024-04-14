@@ -167,6 +167,7 @@ PLATFORMS
   arm64-darwin-22
 
 DEPENDENCIES
+  activestorage
   bootsnap (>= 1.4.4)
   byebug
   httparty
