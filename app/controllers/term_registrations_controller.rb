@@ -1,8 +1,8 @@
 class TermRegistrationsController < ApplicationController
   def index
-    user = User.find_by(uid: params[:user_id])
+    user = User.includes(term_registrations: :category).find_by(uid: params[:user_id])
     if user
-      categories = user.term_registrations.map { |term_registration| term_registration.category }
+      categories = user.categories
       render json: categories, status: :ok
     else
       render json: { error: "User not found" }, status: :not_found
