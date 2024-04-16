@@ -27,6 +27,25 @@ class CategoriesController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def delete
+    ActiveRecord::Base.transaction do
+      # パラメータからユーザーとカテゴリーを取得
+      user = User.find_by(uid: params[:user_id])
+      category = Category.find_by(id: params[:category_id])
+  
+      # ユーザーとカテゴリーに関連する用語登録を取得し削除
+      term_registration = TermRegistration.find_by(user_id: user.id, category_id: category.id)
+      term_registration.destroy if term_registration
+  
+      # カテゴリーがオリジナルであれば削除
+      category.destroy if category&.is_original?
+    end
+  
+    render json: { message: "Category deleted successfully" }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   private
   def category_params
     params.permit(:name, :is_original)
