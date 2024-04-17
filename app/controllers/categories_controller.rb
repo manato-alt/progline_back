@@ -27,6 +27,28 @@ class CategoriesController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def update
+    Category.transaction do
+      user = User.find_by(uid: params[:user_id])
+      category = user.categories.find(params[:category_id])
+      if category.update(category_params)
+        # 画像ファイルがアップロードされた場合は、画像をアタッチしてURLを更新
+        if params[:image_file].present?
+          category.image.attach(params[:image_file])
+          category.update(image_url: url_for(category.image))
+        end
+        
+        # 成功時のレスポンス
+        render json: { message: "カテゴリの更新が成功しました" }, status: :ok
+      else
+        # エラー時のレスポンス
+        render json: category.errors, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   def delete
     ActiveRecord::Base.transaction do
       # パラメータからユーザーとカテゴリーを取得
