@@ -5,4 +5,6 @@ Rails.application.routes.draw do
   post "users" => "users#create"
   get "term_registrations" => "term_registrations#index"
   post "term_registrations" => "term_registrations#create"
+
+  put 'categories/:user_id/:category_id' => 'categories#update'
 end
