@@ -4,6 +4,11 @@ class CategoriesController < ApplicationController
     render json: categories
   end
 
+  def show
+    category = Category.find(params[:id])
+    render json: category
+  end
+
   def create
     Category.transaction do
       user = User.find_by(uid: params[:user_id])
