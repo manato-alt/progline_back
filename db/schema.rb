@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_20_075907) do
+ActiveRecord::Schema.define(version: 2024_04_22_150219) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2024_04_20_075907) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["category_id"], name: "index_service_registrations_on_category_id"
     t.index ["service_id"], name: "index_service_registrations_on_service_id"
+    t.index ["user_id", "category_id", "service_id"], name: "index_unique_service_registrations_on_user_category_service", unique: true
     t.index ["user_id"], name: "index_service_registrations_on_user_id"
   end
 
@@ -73,6 +74,7 @@ ActiveRecord::Schema.define(version: 2024_04_20_075907) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["category_id"], name: "index_term_registrations_on_category_id"
+    t.index ["user_id", "category_id"], name: "index_term_registrations_on_user_id_and_category_id", unique: true
     t.index ["user_id"], name: "index_term_registrations_on_user_id"
   end
 
