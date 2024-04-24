@@ -9,4 +9,7 @@ Rails.application.routes.draw do
   resources :services, only: [:index]
   get "service_registrations" => "service_registrations#index"
   post "service_registrations" => "service_registrations#create"
+  delete 'services/:user_id/:category_id/:service_id' => 'services#delete'
+  post "services" => "services#create"
+
 end
