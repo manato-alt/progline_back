@@ -1,6 +1,6 @@
 class CategoriesController < ApplicationController
   def index
-    categories = Category.all
+    categories = Category.where(is_original: false)
     render json: categories
   end
 
