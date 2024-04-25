@@ -29,6 +29,29 @@ class ServicesController < ApplicationController
 
   end
 
+  def update
+    Service.transaction do
+      user = User.find_by(uid: params[:user_id])
+      service = user.services.find(params[:service_id])
+      if service.update(service_params)
+        # 画像ファイルがアップロードされた場合は、画像をアタッチしてURLを更新
+        if params[:image_file].present?
+          service.image.attach(params[:image_file])
+          service.update(image_url: url_for(service.image))
+        end
+        
+        # 成功時のレスポンス
+        render json: { message: "サービスの更新が成功しました" }, status: :ok
+      else
+        # エラー時のレスポンス
+        render json: service.errors, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+
   def delete
     ActiveRecord::Base.transaction do
       # パラメータからユーザーとカテゴリーを取得
