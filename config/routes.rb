@@ -11,5 +11,7 @@ Rails.application.routes.draw do
   post "service_registrations" => "service_registrations#create"
   delete 'services/:user_id/:category_id/:service_id' => 'services#delete'
   post "services" => "services#create"
+  put 'services/:user_id/:service_id' => 'services#update'
+
 
 end
