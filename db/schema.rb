@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_22_150219) do
+ActiveRecord::Schema.define(version: 2024_04_27_034955) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -46,6 +46,20 @@ ActiveRecord::Schema.define(version: 2024_04_22_150219) do
     t.boolean "is_original", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "contents", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.string "image_url"
+    t.string "favicon_url"
+    t.string "url"
+    t.integer "user_id", null: false
+    t.integer "service_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["service_id"], name: "index_contents_on_service_id"
+    t.index ["user_id"], name: "index_contents_on_user_id"
   end
 
   create_table "service_registrations", force: :cascade do |t|
@@ -86,6 +100,8 @@ ActiveRecord::Schema.define(version: 2024_04_22_150219) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "contents", "services"
+  add_foreign_key "contents", "users"
   add_foreign_key "service_registrations", "categories"
   add_foreign_key "service_registrations", "services"
   add_foreign_key "service_registrations", "users"
