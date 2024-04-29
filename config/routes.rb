@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   delete 'services/:user_id/:category_id/:service_id' => 'services#delete'
   post "services" => "services#create"
   put 'services/:user_id/:service_id' => 'services#update'
+  post "contents" => "contents#create"
 
 
 end
