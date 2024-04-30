@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post "services" => "services#create"
   put 'services/:user_id/:service_id' => 'services#update'
   post "contents" => "contents#create"
+  post "contents_custom" => "contents#create_custom"
 
 
 end
