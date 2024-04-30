@@ -18,4 +18,33 @@ class ContentsController < ApplicationController
       render json: { error: 'Failed to fetch metadata' }, status: :unprocessable_entity
     end
   end
+
+  def create_custom
+    Content.transaction do
+      user = User.find_by(uid: params[:user_id])
+      service = Service.find_by(id: params[:service_id])
+      content = Content.new(content_params)
+      content.user_id = user.id
+      content.service_id = service.id
+      content.image.attach(params[:image_file])
+      
+      if content.save
+        # Active Storageによって生成された画像のURLをimage_urlカラムに保存する
+        content.update(image_url: url_for(content.image))
+        
+        unless content.save
+          raise ActiveRecord::Rollback
+        end
+        render json: { message: "コンテンツの登録が成功しました" }, status: :created
+      else
+        render json: content.errors, status: :unprocessable_entity
+      end
+    end
+  end
+
+  private
+
+  def content_params
+    params.permit(:title, :description, :url)
+  end
 end
