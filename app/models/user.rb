@@ -3,4 +3,5 @@ class User < ApplicationRecord
   has_many :categories, through: :term_registrations
   has_many :service_registrations
   has_many :services, through: :service_registrations
+  has_many :contents
 end
