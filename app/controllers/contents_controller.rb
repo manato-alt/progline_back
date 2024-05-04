@@ -1,6 +1,21 @@
 class ContentsController < ApplicationController
-
   include LinkPreviewHelper
+
+  def index
+    begin
+      user = User.find_by(uid: params[:user_id])
+  
+      if user.nil?
+        render json: { error: "User not found" }, status: :not_found
+        return
+      end
+  
+      contents = user.contents.where(service_id: params[:service_id])
+      render json: contents, status: :ok
+    rescue => e
+      render json: { error: e.message }, status: :internal_server_error
+    end
+  end
 
   def create
     metadata = fetch_metadata(params[:url])

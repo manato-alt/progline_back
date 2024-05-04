@@ -14,6 +14,6 @@ Rails.application.routes.draw do
   put 'services/:user_id/:service_id' => 'services#update'
   post "contents" => "contents#create"
   post "contents_custom" => "contents#create_custom"
-
+  get "contents" => "contents#index"
 
 end
