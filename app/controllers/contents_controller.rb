@@ -72,6 +72,6 @@ class ContentsController < ApplicationController
   private
 
   def content_params
-    params.permit(:title, :description, :url)
+    params.permit(:title, :url)
   end
 end
