@@ -57,6 +57,18 @@ class ContentsController < ApplicationController
     end
   end
 
+  def delete
+    ActiveRecord::Base.transaction do
+      # パラメータからユーザーとカテゴリーを取得
+      content = Content.find_by(id: params[:content_id])      
+      content.destroy if content
+    end  
+    render json: { message: "Content deleted successfully" }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+
   private
 
   def content_params

@@ -15,5 +15,7 @@ Rails.application.routes.draw do
   post "contents" => "contents#create"
   post "contents_custom" => "contents#create_custom"
   get "contents" => "contents#index"
+  delete 'contents/:content_id/' => 'contents#delete'
+
 
 end
