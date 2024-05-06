@@ -1,0 +1,2 @@
+class TemplateService < ApplicationRecord
+end

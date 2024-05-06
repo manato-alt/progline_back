@@ -1,11 +1,33 @@
 class ServicesController < ApplicationController
   def index
-    services = Service.where(is_original: false)
+    services = TemplateService.all
     render json: services
   end
 
+  def create_template
+    Service.transaction do
+      user = User.find_by(uid: params[:user_id])
+      category = Category.find_by(id: params[:category_id])
+      service_template = TemplateService.find_by(id: params[:service_id])
+      service = Service.new(name: service_template.name)
+      
+      if service.save        
+        service_registration = ServiceRegistration.new(user_id: user.id, category_id: category.id, service_id: service.id)
+        unless service_registration.save
+          raise ActiveRecord::Rollback
+        end
+        render json: { message: "サービスの登録が成功しました" }, status: :created
+      else
+        render json: service.errors, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+
+  end
+
   def create
-    Category.transaction do
+    Service.transaction do
       user = User.find_by(uid: params[:user_id])
       category = Category.find_by(id: params[:category_id])
       service = Service.new(service_params)
@@ -65,7 +87,7 @@ class ServicesController < ApplicationController
       service_registration.destroy if service_registration
   
       # カテゴリーがオリジナルであれば削除
-      service.destroy if service&.is_original?
+      service.destroy
     end
   
     render json: { message: "Service deleted successfully" }, status: :ok
@@ -75,7 +97,7 @@ class ServicesController < ApplicationController
 
   private
   def service_params
-    params.permit(:name, :is_original)
+    params.permit(:name)
   end
 
 

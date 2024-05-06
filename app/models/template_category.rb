@@ -1,0 +1,2 @@
+class TemplateCategory < ApplicationRecord
+end
