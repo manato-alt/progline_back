@@ -1,12 +1,32 @@
 class CategoriesController < ApplicationController
   def index
-    categories = Category.where(is_original: false)
+    categories = TemplateCategory.all
     render json: categories
   end
 
   def show
     category = Category.find(params[:id])
     render json: category
+  end
+
+  def create_template
+    Category.transaction do
+      user = User.find_by(uid: params[:user_id])
+      category_template = TemplateCategory.find_by(id: params[:category_id])
+      category = Category.new(name: category_template.name, image_url: category_template.image_url)
+      
+      if category.save
+        term_registration = TermRegistration.new(user_id: user.id, category_id: category.id)
+        unless term_registration.save
+          raise ActiveRecord::Rollback
+        end
+        render json: { message: "カテゴリの登録が成功しました" }, status: :created
+      else
+        render json: category.errors, status: :unprocessable_entity
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   def create
@@ -64,8 +84,7 @@ class CategoriesController < ApplicationController
       term_registration = TermRegistration.find_by(user_id: user.id, category_id: category.id)
       term_registration.destroy if term_registration
   
-      # カテゴリーがオリジナルであれば削除
-      category.destroy if category&.is_original?
+      category.destroy
     end
   
     render json: { message: "Category deleted successfully" }, status: :ok
@@ -75,6 +94,6 @@ class CategoriesController < ApplicationController
 
   private
   def category_params
-    params.permit(:name, :is_original)
+    params.permit(:name)
   end
 end
