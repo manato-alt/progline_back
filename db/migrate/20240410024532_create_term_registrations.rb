@@ -6,5 +6,7 @@ class CreateTermRegistrations < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :term_registrations, [:user_id, :category_id], unique: true
   end
 end
