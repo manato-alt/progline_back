@@ -2,27 +2,15 @@ class ContentsController < ApplicationController
   include LinkPreviewHelper
 
   def index
-    begin
-      user = User.find_by(uid: params[:user_id])
-  
-      if user.nil?
-        render json: { error: "User not found" }, status: :not_found
-        return
-      end
-  
-      contents = user.contents.where(service_id: params[:service_id])
-      render json: contents, status: :ok
-    rescue => e
-      render json: { error: e.message }, status: :internal_server_error
-    end
+    service = Service.find_by(id: params[:service_id])
+    contents = service.contents
+    render json: contents, status: :ok
   end
 
   def create
     metadata = fetch_metadata(params[:url])
-    user = User.find_by(uid: params[:user_id])
     if metadata.present?
       content = Content.new(metadata)
-      content.user_id = user.id
       content.service_id = params[:service_id]
       if content.save
         render json: { message: 'Content created successfully', content: content }, status: :created
@@ -36,11 +24,8 @@ class ContentsController < ApplicationController
 
   def create_custom
     Content.transaction do
-      user = User.find_by(uid: params[:user_id])
       service = Service.find_by(id: params[:service_id])
-      content = Content.new(content_params)
-      content.user_id = user.id
-      content.service_id = service.id
+      content = Content.new(content_params.merge(service_id: service.id))
       content.image.attach(params[:image_file])
       
       if content.save
@@ -60,7 +45,8 @@ class ContentsController < ApplicationController
   def delete
     ActiveRecord::Base.transaction do
       # パラメータからユーザーとカテゴリーを取得
-      content = Content.find_by(id: params[:content_id])      
+      content = Content.find_by(id: params[:content_id])
+      content.image.purge_later if content.image.attached?
       content.destroy if content
     end  
     render json: { message: "Content deleted successfully" }, status: :ok
