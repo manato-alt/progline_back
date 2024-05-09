@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   post "contents_custom" => "contents#create_custom"
   post "contents" => "contents#create"
 
+  resources :graphs, only: [:index]
+
 
   # resources :categories, only: [:index, :show]
   # post "categories" => "categories#create"
