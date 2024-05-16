@@ -13,7 +13,7 @@ class SharedCodesController < ApplicationController
       if shared_code.update(public_name: params[:public_name])
         render json: { message: "Public name updated successfully" }, status: :ok
       else
-        render json: { error: "Failed to update public name" }, status: :unprocessable_entity
+        render json: { error: shared_code.errors.full_messages.join(", ") }, status: :unprocessable_entity
       end
     else
       render json: { error: "User not found" }, status: :not_found
@@ -24,7 +24,11 @@ class SharedCodesController < ApplicationController
     user = User.find_by(uid: params[:user_id])
     if user
       shared_code = user.shared_code || SharedCode.new(user: user)
-      if shared_code.update(code: generate_unique_code)
+      # public_nameが空の場合のみ、auth.currentUser.displayNameを設定する
+      if shared_code.public_name.blank?
+        shared_code.public_name = params[:public_name]
+      end
+      if shared_code.save && shared_code.update(code: generate_unique_code)
         render json: { message: "Code generated successfully", shared_code: shared_code }, status: :ok
       else
         render json: { error: "Failed to generate code" }, status: :unprocessable_entity

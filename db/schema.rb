@@ -70,7 +70,7 @@ ActiveRecord::Schema.define(version: 2024_05_14_092352) do
   end
 
   create_table "shared_codes", force: :cascade do |t|
-    t.string "public_name"
+    t.string "public_name", null: false
     t.string "code"
     t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
