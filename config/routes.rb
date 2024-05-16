@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'shared_codes/index'
   get "template_categories" => "template_categories#index"
   resources :categories, only: [:index, :show]
   delete 'categories/:category_id' => 'categories#delete'
@@ -19,6 +20,12 @@ Rails.application.routes.draw do
   post "contents" => "contents#create"
 
   resources :graphs, only: [:index]
+
+  resources :shared_codes, only: [:index] do
+    post 'create_name', on: :collection
+    post 'create_code', on: :collection
+    delete 'delete_code', on: :collection
+  end
 
 
   # resources :categories, only: [:index, :show]
