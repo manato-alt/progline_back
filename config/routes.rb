@@ -27,6 +27,11 @@ Rails.application.routes.draw do
     delete 'delete_code', on: :collection
   end
 
+  post 'shared_codes/search', to: 'shared_codes#search'
+
+  get 'shared_codes/term_index', to: 'shared_codes#term_index'
+  get 'shared_codes/service_index', to: 'shared_codes#service_index'
+  get 'shared_codes/graph', to: 'shared_codes#graph'
 
   # resources :categories, only: [:index, :show]
   # post "categories" => "categories#create"
