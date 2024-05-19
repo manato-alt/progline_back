@@ -51,6 +51,55 @@ class SharedCodesController < ApplicationController
     end
   end
 
+  def search
+    shared_code = SharedCode.find_by(code: params[:code])
+    if shared_code
+      render json: { public_name: shared_code.public_name }, status: :ok
+    else
+      render json: { error: "シェアコードが見つかりません" }, status: :not_found
+    end
+  end
+
+  def term_index
+    # params[:code] から shared_code を探す
+    shared_code = SharedCode.find_by(code: params[:code])
+    
+    if shared_code
+      # shared_code から user を取得
+      user = shared_code.user
+      categories = user.categories
+      render json: categories
+    else
+      render json: { error: "User not found" }, status: :not_found
+    end
+  end
+
+  def graph
+    shared_code = SharedCode.find_by(code: params[:code])
+    user = shared_code.user
+    if user
+      categories = user.categories.includes(services: :contents)
+    else
+      categories = [] # ユーザーが存在しない場合は空の配列を返す
+    end
+    graph_data = categories.map do |category|
+      {
+        label: category.name, # カテゴリー名
+        data: category.services.sum { |service| service.contents.count } # カテゴリーに関連するコンテンツの合計数
+      }
+    end
+    render json: graph_data
+  end
+
+  def service_index
+    category = Category.find_by(id: params[:category_id])
+    services = category.services
+    render json: services
+  end
+
+  def content_index
+  end
+
   private
 
   def generate_unique_code
