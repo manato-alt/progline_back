@@ -1,6 +1,10 @@
 class TemplateServicesController < ApplicationController
   def index
-    services = TemplateService.all
-    render json: services
+    begin
+      services = TemplateService.all
+      render json: services, status: :ok
+    rescue => e
+      render json: { error: "サービスの取得中にエラーが発生しました: #{e.message}" }, status: :unprocessable_entity
+    end
   end
 end
