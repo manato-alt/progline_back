@@ -1,0 +1,36 @@
+ja:
+  activerecord:
+    models:
+      category: カテゴリ
+      content: コンテンツ
+      service: サービス
+      shared_code: 共有コード
+      user: ユーザー
+    attributes:
+      category:
+        name: 名称
+        image_url: 画像URL
+        user: ユーザー
+      content:
+        title: タイトル
+        image_url: 画像URL
+        favicon_url: ファビコンURL
+        url: URL
+        service: サービス
+      service:
+        name: 名称
+        image_url: 画像URL
+        category: カテゴリ
+      shared_code:
+        public_name: 公開名
+        code: コード
+        user: ユーザー
+      user:
+        uid: UID
+    errors:
+      messages:
+        blank: "を入力してください"
+        too_long: "は%{count}文字以内で入力してください"
+        too_short: "は%{count}文字以上で入力してください"
+        invalid: "は無効です"
+        taken: "はすでに存在します"
