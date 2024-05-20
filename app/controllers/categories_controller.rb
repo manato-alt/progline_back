@@ -16,25 +16,55 @@ class CategoriesController < ApplicationController
 
   def create_template
     user = User.find_by(uid: params[:user_id])
+  
+    if user.nil?
+      render json: { error: "ユーザーが見つかりません" }, status: :not_found and return
+    end
+
     category_template = TemplateCategory.find_by(id: params[:category_id])
+    
+    if category_template.nil?
+      render json: { error: "テンプレートカテゴリーが存在しません" }, status: :not_found and return
+    end
+
     category = Category.new(name: category_template.name, image_url: category_template.image_url, user_id: user.id)
-    category.save
+
+    if category.save
+      render json: { message: "カテゴリーを登録しました", category: category }, status: :created
+    else
+      render json: { error: category.errors.full_messages.join(", ") }, status: :unprocessable_entity
+    end
   end
 
   def create
     user = User.find_by(uid: params[:user_id])
+  
+    if user.nil?
+      render json: { error: "ユーザーが見つかりません" }, status: :not_found and return
+    end
+
     category = Category.new(category_params.merge(user_id: user.id))
-    category.image.attach(params[:image_file])
-    
+
+    if params[:image_file].present?
+      category.image.attach(params[:image_file])
+    end
+
     if category.save
       # Active Storageによって生成された画像のURLをimage_urlカラムに保存する
-      category.update(image_url: url_for(category.image))
+      category.update(image_url: url_for(category.image)) if category.image.attached?
+      render json: { message: "カテゴリーが正常に作成されました", category: category }, status: :created
+    else
+      render json: { error: category.errors.full_messages.join(", ") }, status: :unprocessable_entity
     end
   end
 
   def update
     Category.transaction do
       category = Category.find_by(id: params[:category_id])
+      if category_params[:name].blank?
+        render json: { error: "名称は空にできません" }, status: :unprocessable_entity
+        return
+      end
       if category.update(category_params)
         # 画像ファイルがアップロードされた場合は、画像をアタッチしてURLを更新
         if params[:image_file].present?
@@ -61,7 +91,7 @@ class CategoriesController < ApplicationController
       category.image.purge_later if category.image.attached?
       category.destroy
     end
-    render json: { message: "Category deleted successfully" }, status: :ok
+    render json: { message: "正常に削除されました" }, status: :ok
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
