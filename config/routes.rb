@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  post "users" => "users#create"
   get 'shared_codes/index'
   get "template_categories" => "template_categories#index"
   resources :categories, only: [:index, :show]
@@ -6,6 +7,7 @@ Rails.application.routes.draw do
   put 'categories/:category_id' => 'categories#update'
   post "template_categories" => "categories#create_template"
   post "categories" => "categories#create"
+  post "categories/validate_access" => "categories#validate_access"
 
   get "services" => "services#index"
   get "template_services" => "template_services#index"
@@ -32,27 +34,7 @@ Rails.application.routes.draw do
   get 'shared_codes/term_index', to: 'shared_codes#term_index'
   get 'shared_codes/service_index', to: 'shared_codes#service_index'
   get 'shared_codes/graph', to: 'shared_codes#graph'
+  post "shared_codes/validate_access_term" => "shared_codes#validate_access_term"
+  post "shared_codes/validate_access" => "shared_codes#validate_access"
 
-  # resources :categories, only: [:index, :show]
-  # post "categories" => "categories#create"
-  # post "categories_template" => "categories#create_template"
-  # delete 'categories/:user_id/:category_id' => 'categories#delete'
-  # post "users" => "users#create"
-  # get "term_registrations" => "term_registrations#index"
-  # post "term_registrations" => "term_registrations#create"
-  # put 'categories/:user_id/:category_id' => 'categories#update'
-  # resources :services, only: [:index]
-  # get "service_registrations" => "service_registrations#index"
-  # post "service_registrations" => "service_registrations#create"
-  # delete 'services/:user_id/:service_id' => 'services#delete'
-  # post "services" => "services#create"
-  # post "services_template" => "services#create_template"
-  # put 'services/:user_id/:service_id' => 'services#update'
-  # post "contents" => "contents#create"
-  # post "contents_custom" => "contents#create_custom"
-  # get "contents" => "contents#index"
-  # delete 'contents/:content_id/' => 'contents#delete'
-  # get "template_categories" => "template_categories#index"
-
-  
 end

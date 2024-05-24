@@ -124,7 +124,9 @@ class SharedCodesController < ApplicationController
 
   def service_index
     begin
-      category = Category.find_by(id: params[:category_id])
+      shared_code = SharedCode.find_by(code: params[:code])
+      user = shared_code.user
+      category = user.categories.find_by(id: params[:category_id])
       if category
         services = category.services
         render json: services
@@ -135,6 +137,41 @@ class SharedCodesController < ApplicationController
       render json: { error: "サービスの取得中にエラーが発生しました", details: e.message }, status: :unprocessable_entity
     end
   end
+
+  def validate_access_term
+    shared_code = SharedCode.find_by(code: params[:code])
+    if shared_code.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+    render json: { access: true }
+  rescue
+    render json: { access: false }, status: :unprocessable_entity
+  end
+
+
+
+  def validate_access
+    shared_code = SharedCode.find_by(code: params[:code])
+    if shared_code.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+    user = shared_code.user
+    if user.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+    category = user.categories.find_by(id: params[:category_id])
+    if category.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+    render json: { access: true }
+  rescue
+    render json: { access: false }, status: :unprocessable_entity
+  end
+
 
   private
 
