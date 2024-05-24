@@ -96,6 +96,28 @@ class CategoriesController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def validate_access
+    category = Category.find_by(id: params[:category_id])
+    if category.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+    userA = category.user
+    userB = User.find_by(uid: params[:user_id])
+    if userB.nil?
+      render json: { access: false }, status: :not_found
+      return
+    end
+
+    if userA.id == userB.id
+      render json: { access: true }
+    else
+      render json: { access: false }, status: :forbidden
+    end
+  rescue
+    render json: { access: false }, status: :unprocessable_entity
+  end
+
   private
   def category_params
     params.permit(:name)
