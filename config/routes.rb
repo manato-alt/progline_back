@@ -37,4 +37,6 @@ Rails.application.routes.draw do
   post "shared_codes/validate_access_term" => "shared_codes#validate_access_term"
   post "shared_codes/validate_access" => "shared_codes#validate_access"
 
+  get '/health_check', to: 'health_checks#index'
+
 end
