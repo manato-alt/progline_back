@@ -27,7 +27,7 @@ class CategoriesController < ApplicationController
       render json: { error: "テンプレートカテゴリーが存在しません" }, status: :not_found and return
     end
 
-    category = Category.new(name: category_template.name, image_url: category_template.image_url, user_id: user.id)
+    category = Category.new(name: category_template.name, original_url: category_template.original_url, user_id: user.id)
 
     if category.save
       render json: { message: "カテゴリーを登録しました", category: category }, status: :created
@@ -45,18 +45,13 @@ class CategoriesController < ApplicationController
 
     category = Category.new(category_params.merge(user_id: user.id))
 
-    if params[:image_file].present?
-      category.image.attach(params[:image_file])
-    end
-
     if category.save
-      # Active Storageによって生成された画像のURLをimage_urlカラムに保存する
-      category.update(image_url: url_for(category.image)) if category.image.attached?
       render json: { message: "カテゴリーが正常に作成されました", category: category }, status: :created
     else
       render json: { error: category.errors.full_messages.join(", ") }, status: :unprocessable_entity
     end
   end
+
 
   def update
     Category.transaction do
@@ -66,12 +61,6 @@ class CategoriesController < ApplicationController
         return
       end
       if category.update(category_params)
-        # 画像ファイルがアップロードされた場合は、画像をアタッチしてURLを更新
-        if params[:image_file].present?
-          category.image.attach(params[:image_file])
-          category.update(image_url: url_for(category.image))
-        end
-        
         # 成功時のレスポンス
         render json: { message: "カテゴリの更新が成功しました" }, status: :ok
       else
@@ -88,7 +77,6 @@ class CategoriesController < ApplicationController
       # パラメータからユーザーとカテゴリーを取得
       category = Category.find_by(id: params[:category_id])  
       # ユーザーとカテゴリーに関連する用語登録を取得し削除
-      category.image.purge_later if category.image.attached?
       category.destroy
     end
     render json: { message: "正常に削除されました" }, status: :ok
@@ -120,6 +108,6 @@ class CategoriesController < ApplicationController
 
   private
   def category_params
-    params.permit(:name)
+    params.require(:category).permit(:name, :image)
   end
 end

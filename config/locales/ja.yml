@@ -9,17 +9,17 @@ ja:
     attributes:
       category:
         name: 名称
-        image_url: 画像URL
+        original_url: 画像URL
         user: ユーザー
       content:
         title: タイトル
-        image_url: 画像URL
+        original_url: 画像URL
         favicon_url: ファビコンURL
         url: URL
         service: サービス
       service:
         name: 名称
-        image_url: 画像URL
+        original_url: 画像URL
         category: カテゴリ
       shared_code:
         public_name: 公開名

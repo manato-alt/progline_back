@@ -13,6 +13,6 @@ tags_data = response.parsed_response
 # 上位30件のタグデータを取得してデータベースに保存
 tags_data.first(50).each do |tag|
   unless TemplateCategory.exists?(name: tag['id'])
-    TemplateCategory.create(name: tag['id'], image_url: tag['icon_url'])
+    TemplateCategory.create(name: tag['id'], original_url: tag['icon_url'])
   end
 end

@@ -2,14 +2,14 @@
 
 one:
   name: MyString
-  image_url: MyString
+  original_url: MyString
   url: MyString
   user: one
   service: one
 
 two:
   name: MyString
-  image_url: MyString
+  original_url: MyString
   url: MyString
   user: two
   service: two
