@@ -1,6 +1,7 @@
 class Content < ApplicationRecord
+  mount_uploader :image, ImageUploader
+
   belongs_to :service
-  has_one_attached :image
 
   validates :title, presence: { message: "を入力してください" }
   validates :title, length: { maximum: 100, message: "は100文字以内で入力してください" }

@@ -1,5 +1,5 @@
 class Category < ApplicationRecord
-  has_one_attached :image
+  mount_uploader :image, ImageUploader
   belongs_to :user
   has_many :services, dependent: :destroy
 

@@ -34,25 +34,13 @@ class ContentsController < ApplicationController
   end
 
   def create_custom
-    begin
-      Content.transaction do
-        service = Service.find_by(id: params[:service_id])
-        content = Content.new(content_params.merge(service_id: service.id))
-        content.image.attach(params[:image_file])
-  
-        if content.save
-          # Active Storageによって生成された画像のURLをimage_urlカラムに保存する
-          content.update(image_url: url_for(content.image))
-  
-          render json: { message: "コンテンツの登録が成功しました" }, status: :created
-        else
-          render json: { error: "コンテンツの保存に失敗しました", details: content.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-    rescue ActiveRecord::RecordInvalid => e
-      render json: { error: "コンテンツの登録中にエラーが発生しました", details: e.message }, status: :unprocessable_entity
-    rescue StandardError => e
-      render json: { error: "コンテンツの登録中に予期せぬエラーが発生しました", details: e.message }, status: :unprocessable_entity
+    service = Service.find_by(id: params[:service_id])
+    content = Content.new(content_params.merge(service_id: service.id))
+
+    if content.save
+      render json: { message: "コンテンツの登録が成功しました" }, status: :created
+    else
+      render json: { error: "コンテンツの保存に失敗しました", details: content.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -62,7 +50,6 @@ class ContentsController < ApplicationController
         # パラメータからユーザーとカテゴリーを取得
         content = Content.find_by(id: params[:content_id])
         if content
-          content.image.purge_later if content.image.attached?
           content.destroy
           render json: { message: "コンテンツが正常に削除されました" }, status: :ok
         else
@@ -78,6 +65,6 @@ class ContentsController < ApplicationController
   private
 
   def content_params
-    params.permit(:title, :url)
+    params.require(:content).permit(:title, :image, :url)
   end
 end
