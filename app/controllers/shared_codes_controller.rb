@@ -83,6 +83,12 @@ class SharedCodesController < ApplicationController
     end
   end
 
+  def share_user
+    shared_code = SharedCode.find_by(code: params[:code])
+    public_name = shared_code.public_name
+    render json: public_name
+  end
+
   def term_index
     begin
       # params[:code]からshared_codeを探す
